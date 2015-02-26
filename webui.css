@@ -1,3 +1,16 @@
+#gameScreen {
+  display: none;
+}
+
+.game {
+  text-align: center;
+}
+
+.game img {
+  height: 100px;
+  width: 100px;
+}
+
 .full-width {
   width: 100%;
 }
@@ -17,7 +30,8 @@
 
 .column {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 html {
