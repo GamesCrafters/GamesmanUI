@@ -14,8 +14,6 @@
 		<script src="lib/jquery.min.js"></script>
 		<script src="lib/d3.min.js"></script>
 		<script src="lib/snap.svg.js"></script>
-
-		<script src="webui.js"></script>
 	</head>
 
 	<body>
@@ -24,19 +22,7 @@
 				<a href="index.html"><img src="assets/img/logo.png"></a>
 			</div>
 			<div class="content">
-				<p>Welcome to the GamesCrafters web interface! Here are a list of games available to play:</p>
-				<div class="gameRow">
-					<a href="ttt.html">
-						<div class="game">
-							<img src="assets/img/ttt.png">
-							<h3>Tic-Tac-Toe</h3>
-						</div>
-					</a>
-					<div class="game">
-						<img src="assets/img/connect4.png">
-						<h3>Connect 4</h3>
-					</div>
-				</div>
+				<svg id="main-svg" width="600px" height="600px"></svg>
 			</div>
 			<!--
 				<div class="full column">
@@ -47,6 +33,7 @@
 				</div>
 			-->
 		</div>
+		<script src="webui.js"></script>
 	</body>
 
 </html>
