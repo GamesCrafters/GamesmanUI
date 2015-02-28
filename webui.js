@@ -11,7 +11,7 @@ $(document).ready( function() {
       var game = "";
       game += "<div class='game flex-elem' id='" + key + "' ";
       game +=       "data-game-src='" + games[key].src + "'>\n";
-      game += "  <a href='#'><img src='" + games[key].img + "'></a>\n";
+      game += "  <a href='#" + key + "'><img src='" + games[key].img + "'></a>\n";
       game += "  <h3 class='game-title'>" + games[key].title + "</h3>\n";
       game += "  <p class='game-desc'>" + games[key].desc + "</p>\n";
       game += "</div>";
@@ -19,12 +19,25 @@ $(document).ready( function() {
     }
   }
 
-  $(".game a").on("click", function() {
-    $("#gameScreen").show();
-    $("#menu").hide();
-    $.getScript($(this).parent().attr("data-game-src"));
-  });
+  $(".game a").on("click", showGame);
+
+  // perform URL magic
+  var curloc = new URI(window.location);
+  var gameName = curloc.hash().substr(1);
+  if (games.hasOwnProperty(gameName)) {
+    console.log("displaying " + curloc.hash());
+    showGame(null, "games/" + gameName + "/" + gameName + ".js");
+  }
 });
+
+function showGame(e, gameScript) {
+  gameScript = gameScript || $(this).parent().attr("data-game-src");
+  console.log($(this).parent().attr("data-game-src"));
+  console.log(gameScript);
+  $("#gameScreen").show();
+  $("#menu").hide();
+  $.getScript(gameScript);
+}
 
 $(function () {
   refresh();
