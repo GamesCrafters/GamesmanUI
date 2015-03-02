@@ -1,14 +1,15 @@
-#gameScreen {
+#game-screen {
   display: none;
 }
 
-.game {
+.game-entry {
   text-align: center;
+  margin: 2em;
 }
 
-.game img {
-  height: 100px;
-  width: 100px;
+.game-entry img {
+  height: 200px;
+  width: 200px;
 }
 
 .full-width {
@@ -28,10 +29,23 @@
   user-select: none;
 }
 
-.column {
+.row {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+
+#game-screen {
+  flex-grow: 3;
+}
+
+#game-menu {
+  width: 15%;
 }
 
 html {

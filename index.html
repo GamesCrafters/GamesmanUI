@@ -11,6 +11,7 @@
     <script src='lib/jquery.min.js'></script>
     <script src='lib/d3.min.js'></script>
     <script src='lib/snap.svg.js'></script>
+    <script src='lib/handlebars.js'></script>
     <script src='lib/URI.js'></script>
 
     <script src='webui.js'></script>
@@ -18,14 +19,19 @@
   </head>
 
   <body>
-    <div id="menu" class='full column'>
-      <!--<svg id='main-svg' class='no-select flex-elem'>-->
-      <!--</svg>-->
-      <!--<input id='game-input' style="width: 25%"></input>-->
-      <!--<input id='position' style="width: 25%"></input>-->
-    </div>
-    <div id="gameScreen" class='full column'>
-      <div id="gameBoard">
+    <div id="main" class='row'>
+      <div id="game-menu" class='column'>
+        <script id="game-entry-template" type="text/x-handlebars-template">
+          <div class='game-entry' id="entry-{{name}}"
+               data-game-src="{{src}}">
+            <a href='#'><img src='{{img}}'></a>
+            <h3 class='game-enty-title'>"{{title}}"</h3>
+            <p class='game-enty-desc'>"{{desc}}"</p>
+          </div>
+        </script>
+      </div>
+      <div id="game-screen" class='column'>
+        <div id="game-board"></div>
       </div>
     </div>
   </body>
