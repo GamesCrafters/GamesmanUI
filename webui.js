@@ -76,6 +76,7 @@ function update(board, move, possibleMoves, turn) {
 
 /* ---------------------------- Tic-Tac-Toe ---------------------------- */
 
+//Draws a basic 3x3 board
 function tttBoard() {
 	var i;
 	var boardLines = [];
@@ -89,9 +90,11 @@ function tttBoard() {
 	}
 }
 
+//Given a list of possible movies, the AI computes the best move it can take
 function tttComputeBestMove(possibleMoves) {
 	if (possibleMoves.length == 0) return null;
-	var values = {"lose": -1, "tie": 0, "win": 1};
+	//From AI's point of view, wants us to lose
+	var values = {"lose": 1, "tie": 0, "win": -1};
 	var bestMove = null, maxValue = null, minRemote = null;
 	for (var i = 0; i < possibleMoves.length; i++) {
 		var val = values[possibleMoves[i].value];
@@ -105,6 +108,7 @@ function tttComputeBestMove(possibleMoves) {
 	return parseInt(bestMove) - 1; //0-indexed
 }
 
+//Returns a string representing a new board after a move
 function tttUpdateBoard(board, move, turn) {
 	var piece = "x";
 	if (!turn) piece = "o";
@@ -116,17 +120,29 @@ function tttUpdateBoard(board, move, turn) {
 	return newBoard;
 }
 
+//Confusing atm, gotta document later
 function tttUpdate(board, move, possibleMoves, turn) {
+	//Endgame case
+	if (possibleMoves != null && possibleMoves.length == 0) {
+		tttDraw(board, possibleMoves);
+		return
+	}
+
+	/*
+		Human: update if possible, draw if possible, then call getNextMoves for opponent if a move has been made
+		AI: find a move it hasn't, then call getNextMoves for opponent with the updated board
+	*/
 	if (turn) { //Human's turn
 		if (move != null) board = tttUpdateBoard(board, move, turn);
 		if (possibleMoves != null) tttDraw(board, possibleMoves);
 		if (move != null) getNextMoves(board, !turn);
 	} else { //AI's turn
-		if (move != null) getNextMoves(tttUpdateBoard(board, move, turn), !turn);
 		if (possibleMoves != null) tttUpdate(board, tttComputeBestMove(possibleMoves), null, turn);
+		if (move != null) getNextMoves(tttUpdateBoard(board, move, turn), !turn);
 	}
 }
 
+//Draws the board and possible moves
 function tttDraw(board, possibleMoves) {
 	//Erase all moves
 	$("g").remove();
@@ -163,7 +179,6 @@ function tttDraw(board, possibleMoves) {
 
 	//Draw possible moves
 	for (var i = 0; i < possibleMoves.length; i++) {
-		console.log(possibleMoves[i]);
 		move = possibleMoves[i].move - 1; //We want it to be 0-indexed
 		var posX = (parseInt(move) % 3) * (svgWidth/3) + (svgWidth/6);
 		var posY = Math.floor(parseInt(move) / 3) * (svgHeight/3) + (svgHeight/6);
