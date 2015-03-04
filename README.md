@@ -13,7 +13,7 @@ Connect on port 8081.
 
 
 
-Mapping:
+###Mapping
 
 getStart => start_response
 
@@ -26,7 +26,7 @@ getMoveValue?board="*board*" => move_value_response
 
 Run the server locally before running
 
-###TODO:
+###Pending
 
 Add values, and change transparency with respect to remoteness
 
