@@ -14,10 +14,23 @@ Connect on port 8081.
 
 
 Mapping:
+
 getStart => start_response
+
 getEnd?board="*board*" => end_response
+
 getNextMoveValues?board="*board*" => next_move_values_response
+
 getMoveValue?board="*board*" => move_value_response
 
 
 Run the server locally before running
+
+###TODO:
+
+Add values, and change transparency with respect to remoteness
+
+Human vs Human, AI vs AI, AI vs Human (AI first)
+
+Reset button
+

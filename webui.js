@@ -24,9 +24,8 @@ var path = location.pathname.split("/");
 var GAME = path[path.length - 1].split(".")[0];
 
 var s = Snap("#main-svg");
-var epsilon = 5;
-var svgWidth = parseInt($("#main-svg").attr("width")) - epsilon;
-var svgHeight = parseInt($("#main-svg").attr("height")) - epsilon;
+var svgWidth = parseInt($("#main-svg").attr("width"));
+var svgHeight = parseInt($("#main-svg").attr("height"));
 
 init();
 
@@ -173,7 +172,7 @@ function tttDraw(board, possibleMoves) {
 			var o = s.group(circle1, circle2);
 
 			circle1.attr({ fill: "#f00" });
-			circle2.attr({ fill: "#fff" });
+			circle2.attr({ fill: "#bbb" });
 		}
 	}
 
