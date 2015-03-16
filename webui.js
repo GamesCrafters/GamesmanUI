@@ -13,22 +13,29 @@ $(document).ready(function() {
     $('#game-menu').append(entryTemplate(game));
   });
 
-  $(".game-entry a").on("click", showGame);
+  $(".game-entry a").on("click", function () {
+    showGame($(this).parent().attr("data-game-name"));
+  });
 
   // perform URL magic
   var curloc = new URI(window.location);
   var gameName = curloc.hash().substr(1);
   if (games.hasOwnProperty(gameName)) {
     console.log("displaying " + curloc.hash());
-    showGame(null, "games/" + gameName + "/" + gameName + ".js");
+    showGame(null, gameName);
   }
 });
 
-function showGame(e, gameScript) {
-  gameScript = gameScript || $(this).parent().attr("data-game-src");
-  console.log($(this).parent().attr("data-game-src"));
-  console.log(gameScript);
+function showGame(gameName) {
+  var gameScript = games[gameName].src;
   $("#game-screen").show();
   $("#game-menu").hide();
   $.getScript(gameScript);
+  var newloc = new URI(window.location);
+  newloc.hash("");
+  newloc.hash(URI.buildQuery({
+    game: gameName
+  }));
+  window.location = newloc.toString();
+  console.log(newloc.toString());
 }
