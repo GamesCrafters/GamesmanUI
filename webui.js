@@ -1,3 +1,11 @@
+/*  
+ *  View Controller for GamesManUI
+ *
+ *  GamesCrafters Spring 2015
+*/
+
+
+/* --> url change,  --> startGame */
 $(document).ready(function() {
   // iterate through games/games.json
   // which we assume to contain information about games in games/<gamename>
@@ -39,3 +47,49 @@ function showGame(gameName) {
   window.location = newloc.toString();
   console.log(newloc.toString());
 }
+
+var HOST = 'http://localhost:8081/';
+var path = location.pathname.split("/");
+
+function getGameName() {
+  var loc = new URI(window.location).hash();
+  return URI.parseQuery(loc).game;
+}
+
+var globalRenderer = null;
+
+// get the current game name out of the URL.
+/* getStart, updatePosition */
+function startGame() {
+  globalRenderer = games[getGameName()].renderer($('#game-board'));
+  $.get(HOST + getGameName() + '/getStart', function (res) {
+     board = JSON.parse(res).response;
+     globalRenderer.drawBoard(board);
+  getNextMoves(board);
+
+  });
+}
+
+function getNextMoves(board) {
+  $.get(HOST + getGameName() + '/getNextMoveValues?board="' + board + '"', function(res2) {
+    var next = JSON.parse(res2);
+    drawMoves(board, next);
+  });
+}
+
+/* drawBoard, getNextMoveValues, addMove */
+function drawMoves(board, nextMoves) {
+  for (var i = 0; i < nextMoves.length; i++) { 
+    var move = nextMoves[i].move;
+    var value = nextMoves[i].value;
+    var nextBoard = nextMoves[i].board;
+    var callBack = function(b) { 
+        return function() { getNextMoves(b); 
+    }} (nextBoard);
+    globalRenderer.drawMoves(move, value, callBack, board, nextBoard);
+  }
+}
+
+
+
+
