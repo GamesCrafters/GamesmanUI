@@ -57,36 +57,55 @@ function getGameName() {
 }
 
 var globalRenderer = null;
+var gameValueCache = {};
 
 // get the current game name out of the URL.
 /* getStart, updatePosition */
 function startGame() {
   globalRenderer = games[getGameName()].renderer($('#game-board'));
   $.get(HOST + getGameName() + '/getStart', function (res) {
-     board = JSON.parse(res).response;
-     globalRenderer.drawBoard(board);
-  getNextMoves(board);
-
+    var board = JSON.parse(res).response;
+    globalRenderer.drawBoard(board);
+    getNextMoves(board, drawMoves);
   });
 }
 
-function getNextMoves(board) {
-  $.get(HOST + getGameName() + '/getNextMoveValues?board="' + board + '"', function(res2) {
-    var next = JSON.parse(res2);
-    drawMoves(board, next);
-  });
+function getNextMoves(board, callback) {
+  if (gameValueCache.hasOwnProperty(board)) {
+    if (callback) {
+      callback(board, gameValueCache[board]);
+    }
+  } else {
+    $.get(HOST + getGameName() + '/getNextMoveValues?board="' + board + '"',
+          function(res2) {
+            var next = JSON.parse(res2);
+            gameValueCache[board] = next;
+            if (callback) {
+              callback(board, next);
+            }
+          });
+  }
 }
 
 /* drawBoard, getNextMoveValues, addMove */
+// doMove starts animation, getNextMove Values 
 function drawMoves(board, nextMoves) {
+  globalRenderer.clearMoves();
   for (var i = 0; i < nextMoves.length; i++) { 
     var move = nextMoves[i].move;
     var value = nextMoves[i].value;
     var nextBoard = nextMoves[i].board;
-    var callBack = function(b) { 
-        return function() { getNextMoves(b); 
-    }} (nextBoard);
-    globalRenderer.drawMoves(move, value, callBack, board, nextBoard);
+
+    var clickCallBack = function(nextBoard, move) { 
+        return function() {
+          globalRender.clearMoves();
+          getNextMoves(nextBoard);
+          globalRender.doMove(move, function() {
+                getNextMoves(nextBoard, drawMoves); },
+            nextBoard, board); 
+    }} (nextBoard, move);
+
+    globalRenderer.drawMove(move, value, clickCallBack, board, nextBoard);
   }
 }
 
