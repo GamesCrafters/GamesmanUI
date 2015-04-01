@@ -28,9 +28,9 @@ Run the server locally before running
 
 ###Pending
 
-Add values, and change transparency with respect to remoteness
+Options - Human vs Human, AI, vs AI, etc.
+	Expand menu when clicked?
 
-Human vs Human, AI vs AI, AI vs Human (AI first)
+Toggle values (changes possiblemoves color and tranparency w/ respect to remoteness)
 
-Reset button
-
+Reset board

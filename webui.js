@@ -17,8 +17,27 @@ Easy - Add in game-specific function callers in init(), update(), and draw()
 Hard - Implement game-specific functions (e.g. tttDraw())
 */
 
-//INITIALIZE VARIABLES
+//Taken from http://stackoverflow.com/questions/1802936/stop-all-active-ajax-requests-in-jquery
+//Call $.xhrPool.abortAll() to terminate all XMLHttpRequests
+//Without this, after pressing 'reset' multiple times, the number of requests grows exponentially
+$(function() {
+    $.xhrPool = [];
+    $.xhrPool.abortAll = function() {
+        $(this).each(function(i, jqXHR) {   //  cycle through list of recorded connection
+            jqXHR.abort();  //  aborts connection
+            $.xhrPool.splice(i, 1); //  removes from list by index
+        });
+    }
+    $.ajaxSetup({
+        beforeSend: function(jqXHR) { $.xhrPool.push(jqXHR); }, //  annd connection to list
+        complete: function(jqXHR) {
+            var i = $.xhrPool.indexOf(jqXHR);   //  get index for current connection completed
+            if (i > -1) $.xhrPool.splice(i, 1); //  removes from list by index
+        }
+    });
+})
 
+//INITIALIZE VARIABLES
 var HOST = 'http://localhost:8081/';
 var path = location.pathname.split("/");
 var GAME = path[path.length - 1].split(".")[0];
@@ -26,6 +45,7 @@ var GAME = path[path.length - 1].split(".")[0];
 var s = Snap("#main-svg");
 var svgWidth = parseInt($("#main-svg").attr("width"));
 var svgHeight = parseInt($("#main-svg").attr("height"));
+var toggleValues = false;
 
 init();
 
@@ -39,6 +59,7 @@ function getStart() {
 }
 
 function getNextMoves(board, turn) {
+	console.log("called")
 	$.get(HOST + GAME + '/getNextMoveValues?board="' + board + '"', function(res) {
 		var res = JSON.parse(res);
 		update(board, null, res.response, turn);
@@ -47,6 +68,16 @@ function getNextMoves(board, turn) {
 			var move = $(this).attr("id");
 			if (typeof(move) != undefined) update(board, move, res.response, turn);
 		});
+
+		$("#reset").click(function() {
+			$.xhrPool.abortAll();
+			return getStart();
+		});
+
+		/*$("#toggleValues").click(function() {
+			toggleValues = !toggleValues;
+			update(board, null, res.response, turn);
+		});*/
 
 	});
 }
@@ -119,7 +150,18 @@ function tttUpdateBoard(board, move, turn) {
 	return newBoard;
 }
 
-//Confusing atm, gotta document later
+/*
+	If endgame, draws board and just returns
+
+	Human's turn:
+		If AI made a move, update internal board representation
+		If there are possible moves, draw the board with possible moves to choose
+		Then call getNextMoves to give the other player a turn
+
+	AI's turn:
+		If there are possible movies, update the internal board representation with the best move it can make
+		Then call getNextMoves to give human a turn
+*/
 function tttUpdate(board, move, possibleMoves, turn) {
 	//Endgame case
 	if (possibleMoves != null && possibleMoves.length == 0) {
@@ -127,10 +169,6 @@ function tttUpdate(board, move, possibleMoves, turn) {
 		return
 	}
 
-	/*
-		Human: update if possible, draw if possible, then call getNextMoves for opponent if a move has been made
-		AI: find a move it hasn't, then call getNextMoves for opponent with the updated board
-	*/
 	if (turn) { //Human's turn
 		if (move != null) board = tttUpdateBoard(board, move, turn);
 		if (possibleMoves != null) tttDraw(board, possibleMoves);
@@ -196,7 +234,13 @@ function tttDraw(board, possibleMoves) {
 		var circle = s.circle(posX, posY, Math.min(svgWidth, svgHeight)/6 - 5);
 		var x = s.group(circle, rect1, rect2);
 
-		x.attr({ fill: "#eef", id: move.toString() });
+		var fill;
+		if (!toggleValues) {
+			fill = "#eef" 
+		} else {
+			fill = "#f66"
+		}
+		x.attr({ fill: fill, id: move.toString() });
 		circle.attr({ opacity: 0 });
 		rect1.attr({ transform: 'translate(' + rect1X + ',' + rect1Y + ') rotate(45, 0, 0)' });
 		rect2.attr({ transform: 'translate(' + rect2X + ',' + rect2Y + ') rotate(-45, 0, 0)' });
