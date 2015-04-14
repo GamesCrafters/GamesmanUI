@@ -6,10 +6,10 @@ games.ttt.renderer = function(target) {
     height: null,
     drawBoard: function (board) {
       renderer.svg = gcutil.makeSVG(target);
-      $(target).children().last().width($(target).height() + 10);
-      $(target).children().last().height($(target).height() + 10);
-      renderer.width = $(target).height();
-      renderer.height = $(target).height();
+      var svg = $(target).children().last();
+      svg.width(svg.height());
+      renderer.width = svg.height();
+      renderer.height = svg.height();
       tttBoard(renderer);
       tttDraw(renderer, board);
     },

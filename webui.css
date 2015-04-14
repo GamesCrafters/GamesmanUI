@@ -2,14 +2,28 @@
   text-align: center;
   padding: 0.75em;
   margin: 0.25em;
-  box-shadow: 0 0 0.25em 0.25em #555;
-  background: linear-gradient(to bottom, #ddd, #dadada, #ddd);
-  /*box-shadow: 2em 2em 0 0 0 0;*/
+  box-shadow: 0 0 0.25em #555, inset 0 0 3em white;
+  background: linear-gradient(to bottom, #ccc, 0%, #ddd, 60%, #dadada, #999);
   border-radius: 1em;
   border-style: solid;
-  border-width: 2px;
-  border-color: #666;
+  border-width: 1px;
+  border-color: #888;
 }
+
+button.game-entry::-moz-focus-inner {
+  border: 0;
+}
+
+.game-entry:hover:not(.selected-game) {
+  background: linear-gradient(to bottom, #bababa, #cacaca);
+  box-shadow: 0 0 0;
+}
+
+.game-entry:active, .selected-game {
+  background: linear-gradient(to bottom, #bbb, 0%, #777, 60%, #888, #999);
+  box-shadow: inset 0 0 0.5em #000;
+} 
+
 
 .game-entry img {
   height: 100px;
@@ -55,6 +69,7 @@
 
 #game-board {
   text-align: center;
+  margin: 1em;
 }
 
 #gamesman-logo-wrapper {
@@ -71,16 +86,36 @@
 }
 
 #game-menu {
-  margin: 0.1em;
-  padding: 0.1em;
+  margin: 0.5em;
+  padding: 0.25em;
   overflow: auto;
+}
+
+/* Hovering above version. */
+#game-menu {
+  margin-bottom: 1em;
+  border-radius: 1em;
+  background: #aaa;
+  box-shadow: inset 0 0 1em #bbb, 0.5em 0.5em 1em #333;
+}
+
+/* Inset version. */
+/*
+#game-menu {
+  border-radius: 1em;
   background: #6a6a6a;
   box-shadow: inset 0 0 0.25em 0.25em #444;
 }
+*/
 
 .full {
   width: 100%;
   height: 100%;
+}
+
+.almost-full {
+  width: 98%;
+  height: 98%;
 }
 
 html {
@@ -93,5 +128,4 @@ body {
   height: 100%;
   margin: 0;
   background: #777;
-  overflow: hidden;
 }

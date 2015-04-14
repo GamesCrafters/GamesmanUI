@@ -1,11 +1,7 @@
 /*  
- *  View Controller for GamesManUI
- *
  *  GamesCrafters Spring 2015
-*/
+ */
 
-
-/* --> url change,  --> startGame */
 $(document).ready(function() {
   // iterate through games/games.json
   // which we assume to contain information about games in games/<gamename>
@@ -24,6 +20,16 @@ $(document).ready(function() {
   $(".game-entry").on("click", function () {
     showGame($(this).attr("data-game-name"));
   });
+  $(window).on('resize', redrawBoard);
+
+  // This should actually call the appropriate (un)doMove functions, if
+  // possible.
+  $(window).on('hashchange', reload);
+
+  reload();
+});
+
+function reload() {
   if (globalGameName() !== undefined) {
     if (!globalGameBoard()) {
       showGame(globalGameName());
@@ -31,8 +37,12 @@ $(document).ready(function() {
       loadGame(globalGameName(), redrawBoard);
     }
   }
-  $(window).on('resize', redrawBoard);
-});
+}
+
+function selectGame(gameName) {
+  $(".selected-game").removeClass("selected-game");
+  $("#entry-" + gameName).addClass("selected-game");
+}
 
 function redrawBoard () {
   $("#game-board").html("");
@@ -44,6 +54,7 @@ function redrawBoard () {
 }
 
 function loadGame(gameName, callback) {
+  selectGame(gameName);
   var gameScript = games[gameName].src;
   $.getScript(gameScript, function () {
     var game = games[gameName];
@@ -161,7 +172,3 @@ function drawMoves(board, nextMoves) {
     globalRenderer.drawMove(move, value, clickCallBack, board, nextBoard);
   }
 }
-
-
-
-
