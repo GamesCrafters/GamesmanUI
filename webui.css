@@ -44,10 +44,6 @@ button.game-entry::-moz-focus-inner {
   flex-grow: 1;
 }
 
-.no-select {
-  user-select: none;
-}
-
 .row {
   display: flex;
   flex-direction: row;
@@ -128,4 +124,8 @@ body {
   height: 100%;
   margin: 0;
   background: #777;
+}
+
+body * {
+  color: black;
 }

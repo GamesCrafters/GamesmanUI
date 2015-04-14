@@ -56,13 +56,17 @@ function redrawBoard () {
 function loadGame(gameName, callback) {
   selectGame(gameName);
   var gameScript = games[gameName].src;
-  $.getScript(gameScript, function () {
-    var game = games[gameName];
-    globalRenderer = game.renderer($('#game-board'));
-    if (callback) {
-      callback(gameName);
-    }
-  });
+  $.getScript(gameScript)
+    .done(function (script, textStatus) {
+      var game = games[gameName];
+      globalRenderer = game.renderer($('#game-board'));
+      if (callback) {
+        callback(gameName);
+      }
+    })
+    .fail(function (jqxhr, settings, exception) {
+      console.error(exception);
+    });
 }
 
 function showGame(gameName) {
@@ -131,10 +135,8 @@ function queryClassic(gameName, cmd, params, callback, ecallback) {
 }
 
 function getNextMoves(board, callback) {
-  console.log('getting moves');
   if (gameValueCache.hasOwnProperty(board)) {
     if (callback) {
-      console.log('got from cache');
       callback(board, gameValueCache[board]);
     }
   } else {
@@ -151,24 +153,22 @@ function getNextMoves(board, callback) {
 /* drawBoard, getNextMoveValues, addMove */
 // doMove starts animation, getNextMove Values 
 function drawMoves(board, nextMoves) {
-  console.log('in drawMoves');
-  console.log('moves =', nextMoves);
   globalRenderer.clearMoves();
   for (var i = 0; i < nextMoves.length; i++) { 
     var move = nextMoves[i].move;
     var value = nextMoves[i].value;
     var nextBoard = nextMoves[i].board;
 
-    var clickCallBack = function(nextBoard, move) { 
+    var clickCallBack = function (nextBoard, move) { 
         return function() {
-          globalRender.clearMoves();
+          globalGameBoard(nextBoard);
+          globalRenderer.clearMoves();
           getNextMoves(nextBoard);
-          globalRender.doMove(move, function() {
-                getNextMoves(nextBoard, drawMoves); },
-            nextBoard, board); 
-    }} (nextBoard, move);
+          globalRenderer.doMove(move, function() { getNextMoves(nextBoard, drawMoves); },
+                                nextBoard, board); 
+        }
+    } (nextBoard, move);
 
-    console.log('drawing move', move);
     globalRenderer.drawMove(move, value, clickCallBack, board, nextBoard);
   }
 }
