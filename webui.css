@@ -54,7 +54,7 @@
 }
 
 #game-board {
-  float: center;
+  text-align: center;
 }
 
 #gamesman-logo-wrapper {

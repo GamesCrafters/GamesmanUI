@@ -25,7 +25,11 @@ $(document).ready(function() {
     showGame($(this).attr("data-game-name"));
   });
   if (globalGameName() !== undefined) {
-    showGame(globalGameName());
+    if (!globalGameBoard()) {
+      showGame(globalGameName());
+    } else {
+      loadGame(globalGameName(), redrawBoard);
+    }
   }
   $(window).on('resize', redrawBoard);
 });
@@ -33,17 +37,27 @@ $(document).ready(function() {
 function redrawBoard () {
   $("#game-board").html("");
   if (globalRenderer) {
-    globalRenderer.drawBoard(globalGameBoard());
+    var board = globalGameBoard();
+    globalRenderer.drawBoard(board);
+    getNextMoves(board, drawMoves);
   }
+}
+
+function loadGame(gameName, callback) {
+  var gameScript = games[gameName].src;
+  $.getScript(gameScript, function () {
+    var game = games[gameName];
+    globalRenderer = game.renderer($('#game-board'));
+    if (callback) {
+      callback(gameName);
+    }
+  });
 }
 
 function showGame(gameName) {
   globalRenderer = null;
   redrawBoard();
-  var gameScript = games[gameName].src;
-  $.getScript(gameScript, function () {
-    startGame(gameName);
-  });
+  loadGame(gameName, startGame);
 }
 
 var HOST = 'http://localhost:8081/';
@@ -81,9 +95,7 @@ var gameValueCache = {};
 /* getStart, updatePosition */
 function startGame(gameName) {
   game = games[gameName];
-  globalRenderer = game.renderer($('#game-board'));
-  queryClassic(gameName, 'getStart', {}, function (res) {
-    var board = JSON.parse(res).response;
+  queryClassic(gameName, 'getStart', {}, function (board) {
     globalHashParams({
       board: board,
       game: gameName
@@ -101,19 +113,22 @@ function queryClassic(gameName, cmd, params, callback, ecallback) {
   if (!gameName) {
     throw new Exception("You passed an invalid game name (" + gameName + ") into queryClassic.");
   }
-  var url = HOST + gameName + '/' + cmd + URI.buildQuery(params);
-  $.get(url, callback, ecallback);
+  var url = HOST + gameName + '/' + cmd + "?" + URI.buildQuery(params);
+  $.get(url, function (res) {
+    callback(JSON.parse(res).response)
+  }, ecallback);
 }
 
 function getNextMoves(board, callback) {
+  console.log('getting moves');
   if (gameValueCache.hasOwnProperty(board)) {
     if (callback) {
+      console.log('got from cache');
       callback(board, gameValueCache[board]);
     }
   } else {
     queryClassic(globalGameName(), 'getNextMoveValues', {board: board},
-      function(res2) {
-        var next = JSON.parse(res2);
+      function(next) {
         gameValueCache[board] = next;
         if (callback) {
           callback(board, next);
@@ -125,6 +140,8 @@ function getNextMoves(board, callback) {
 /* drawBoard, getNextMoveValues, addMove */
 // doMove starts animation, getNextMove Values 
 function drawMoves(board, nextMoves) {
+  console.log('in drawMoves');
+  console.log('moves =', nextMoves);
   globalRenderer.clearMoves();
   for (var i = 0; i < nextMoves.length; i++) { 
     var move = nextMoves[i].move;
@@ -140,6 +157,7 @@ function drawMoves(board, nextMoves) {
             nextBoard, board); 
     }} (nextBoard, move);
 
+    console.log('drawing move', move);
     globalRenderer.drawMove(move, value, clickCallBack, board, nextBoard);
   }
 }
