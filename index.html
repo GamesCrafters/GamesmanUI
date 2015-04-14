@@ -2,7 +2,7 @@
 <html lang='en'>
   <head>
     <meta charset='utf-8'>
-    <title>Vector Testing</title>
+    <title>Gamesman! - Play games online.</title>
     <meta name='description' content='test page'>
     <meta name='author' content='Kyle R. Zentner'>
     <link rel='stylesheet' href='webui.css'>
@@ -20,19 +20,25 @@
   </head>
 
   <body>
-    <div id="main" class='row'>
-      <div id="game-menu" class='column'>
-        <script id="game-entry-template" type="text/x-handlebars-template">
-          <div class='game-entry' id="entry-{{name}}"
-               data-game-name="{{name}}">
-            <a><img src='{{img}}'></a>
-            <h3 class='game-enty-title'>"{{title}}"</h3>
-            <p class='game-enty-desc'>"{{desc}}"</p>
-          </div>
-        </script>
+    <div id="main" class='row full'>
+      <div id="left-panel" class='column'>
+        <div id="gamesman-logo-wrapper">
+          <img id="gamesman-logo" class="" src='logo.png'>
+        </div>
+        <div id="game-menu" class='flex-elem column'>
+          <script id="game-entry-template" type="text/x-handlebars-template">
+            <div class='game-entry' id="entry-{{name}}"
+                 data-game-name="{{name}}">
+              <!--<a><img src='{{img}}'></a>-->
+              <img src='{{img}}'>
+              <h3 class='game-enty-title'>"{{title}}"</h3>
+              <p class='game-enty-desc'>"{{desc}}"</p>
+            </div>
+          </script>
+        </div>
       </div>
-      <div id="game-screen" class='column'>
-        <div id="game-board"></div>
+      <div id="game-screen" class='column grow'>
+        <div id="game-board" class='grow'></div>
       </div>
     </div>
   </body>

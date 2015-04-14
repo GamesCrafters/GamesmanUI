@@ -1,4 +1,4 @@
-
+console.log('loading ttt')
 games.ttt.renderer = function(div) {
 	return {
 		drawBoard:function(board){
@@ -76,12 +76,12 @@ init();
 
 //SERVER REQUESTS
 
-function getStart() {
-	$.get(HOST + GAME + '/getStart', function (res) {
-		var res = JSON.parse(res);
-		getNextMoves(res.response, true);
-	});
-}
+//function getStart() {
+	//$.get(HOST + GAME + '/getStart', function (res) {
+		//var res = JSON.parse(res);
+		//getNextMoves(res.response, true);
+	//});
+//}
 
 function getNextMoves(board, turn) {
 	$.get(HOST + GAME + '/getNextMoveValues?board="' + board + '"', function(res) {
@@ -105,7 +105,7 @@ function init() {
 			break;
 	}
 
-	getStart();
+	//getStart();
 }
 
 function update(board, move, possibleMoves, turn) {

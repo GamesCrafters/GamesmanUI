@@ -21,53 +21,88 @@ $(document).ready(function() {
     $('#game-menu').append(entryTemplate(game));
   });
 
-  $(".game-entry a").on("click", function () {
-    showGame($(this).parent().attr("data-game-name"));
+  $(".game-entry").on("click", function () {
+    showGame($(this).attr("data-game-name"));
   });
-
-  // perform URL magic
-  var curloc = new URI(window.location);
-  var gameName = curloc.hash().substr(1);
-  if (games.hasOwnProperty(gameName)) {
-    console.log("displaying " + curloc.hash());
-    showGame(null, gameName);
+  if (globalGameName() !== undefined) {
+    showGame(globalGameName());
   }
+  $(window).on('resize', redrawBoard);
 });
 
+function redrawBoard () {
+  $("#game-board").html("");
+  if (globalRenderer) {
+    globalRenderer.drawBoard(globalGameBoard());
+  }
+}
+
 function showGame(gameName) {
+  globalRenderer = null;
+  redrawBoard();
   var gameScript = games[gameName].src;
-  $("#game-screen").show();
-  $("#game-menu").hide();
-  $.getScript(gameScript);
-  var newloc = new URI(window.location);
-  newloc.hash("");
-  newloc.hash(URI.buildQuery({
-    game: gameName
-  }));
-  window.location = newloc.toString();
-  console.log(newloc.toString());
+  $.getScript(gameScript, function () {
+    startGame(gameName);
+  });
 }
 
 var HOST = 'http://localhost:8081/';
 var path = location.pathname.split("/");
 
-function getGameName() {
-  var loc = new URI(window.location).hash();
-  return URI.parseQuery(loc).game;
+function globalHashParams(params) {
+  if (params !== undefined) {
+    window.location.hash = "?" + URI.buildQuery(params);
+  }
+  if (window.location.hash === "") {
+    return {};
+  } else {
+    return URI.parseQuery(window.location.hash.substr(1));
+  }
+};
+
+function makeParamFunction(name) {
+  return function (new_val) {
+    params = globalHashParams();
+    if (new_val !== undefined) {
+      params[name] = new_val;
+      globalHashParams(params);
+    }
+    return params[name];
+  };
 }
+
+var globalGameName = makeParamFunction('game');
+var globalGameBoard = makeParamFunction('board');
 
 var globalRenderer = null;
 var gameValueCache = {};
 
 // get the current game name out of the URL.
 /* getStart, updatePosition */
-function startGame() {
-  globalRenderer = games[getGameName()].renderer($('#game-board'));
-  $.get(HOST + getGameName() + '/getStart', function (res) {
+function startGame(gameName) {
+  game = games[gameName];
+  globalRenderer = game.renderer($('#game-board'));
+  queryClassic(gameName, 'getStart', {}, function (res) {
     var board = JSON.parse(res).response;
-    globalRenderer.drawBoard(board);
+    globalHashParams({
+      board: board,
+      game: gameName
+    });
+    try {
+      globalRenderer.drawBoard(board);
+    } catch (err) {
+      console.error('Error drawing board', err);
+    }
     getNextMoves(board, drawMoves);
   });
+}
+
+function queryClassic(gameName, cmd, params, callback, ecallback) {
+  if (!gameName) {
+    throw new Exception("You passed an invalid game name (" + gameName + ") into queryClassic.");
+  }
+  var url = HOST + gameName + '/' + cmd + URI.buildQuery(params);
+  $.get(url, callback, ecallback);
 }
 
 function getNextMoves(board, callback) {
@@ -76,14 +111,14 @@ function getNextMoves(board, callback) {
       callback(board, gameValueCache[board]);
     }
   } else {
-    $.get(HOST + getGameName() + '/getNextMoveValues?board="' + board + '"',
-          function(res2) {
-            var next = JSON.parse(res2);
-            gameValueCache[board] = next;
-            if (callback) {
-              callback(board, next);
-            }
-          });
+    queryClassic(globalGameName(), 'getNextMoveValues', {board: board},
+      function(res2) {
+        var next = JSON.parse(res2);
+        gameValueCache[board] = next;
+        if (callback) {
+          callback(board, next);
+        }
+      });
   }
 }
 
