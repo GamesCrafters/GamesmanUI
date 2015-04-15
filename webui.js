@@ -150,14 +150,66 @@ function getNextMoves(board, callback) {
   }
 }
 
+function colorMoves(moves) {
+  var ms = _(moves);
+  var idx = {};
+  var i = 0;
+  var j = 0;
+  for (i = 0; i < moves.length; i++) {
+    idx[moves[i].board] = i;
+  }
+
+  var opacity = [1, 0.5, 0.1];
+  function getOpacity (index) {
+    return opacity[_.min([index, opacity.length - 1])];
+  }
+
+  var colors = [];
+  theMoves = ms;
+
+  var winMoves = ms.filter(function (move) { return move.value[0] == "l" })
+                      .sort(function (move) { return move.remoteness })
+                      .value()
+  var loseMoves = ms.filter(function (move) { return move.value[0] == "w" })
+                       .sort(function (move) { return -move.remoteness })
+                       .value()
+  var tieMoves = ms.filter(function (move) { return move.value[0] == "t" })
+                      .sort(function (move) { return move.remoteness })
+                      .value()
+  j = 0;
+  for (i = 0; i < winMoves.length; i++) {
+    if (i > 0 && winMoves[i - 1].remoteness !== winMoves[i].remoteness) {
+      j += 1;
+    }
+    colors[idx[winMoves[i].board]] = "rgba(0, 255, 0, " + getOpacity(j) + ")";
+  }
+  j = 0
+  for (i = 0; i < loseMoves.length; i++) {
+    if (i > 0 && loseMoves[i - 1].remoteness !== loseMoves[i].remoteness) {
+      j += 1;
+    }
+    colors[idx[loseMoves[i].board]] = "rgba(139, 0, 0, " + getOpacity(j) + ")";
+  }
+  j = 0
+  for (i = 0; i < tieMoves.length; i++) {
+    if (i > 0 && tieMoves[i - 1].remoteness !== tieMoves[i].remoteness) {
+      j += 1;
+    }
+    colors[idx[tieMoves[i].board]] = "rgba(255, 255, 0, " + getOpacity(j) + ")";
+  }
+  return colors;
+}
+
 /* drawBoard, getNextMoveValues, addMove */
 // doMove starts animation, getNextMove Values 
 function drawMoves(board, nextMoves) {
   globalRenderer.clearMoves();
+  var colors = colorMoves(nextMoves);
   for (var i = 0; i < nextMoves.length; i++) { 
     var move = nextMoves[i].move;
     var value = nextMoves[i].value;
     var nextBoard = nextMoves[i].board;
+    var color = colors[i];
 
     var clickCallBack = function (nextBoard, move) { 
         return function() {
@@ -169,6 +221,6 @@ function drawMoves(board, nextMoves) {
         }
     } (nextBoard, move);
 
-    globalRenderer.drawMove(move, value, clickCallBack, board, nextBoard);
+    globalRenderer.drawMove(move, value, color, clickCallBack, board, nextBoard);
   }
 }

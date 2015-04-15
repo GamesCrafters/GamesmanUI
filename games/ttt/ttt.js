@@ -117,24 +117,24 @@ function tttDraw(renderer, board) {
       var rect1Y = (posY - rectHeight * factor - rectWidth * factor).toString();
       var rect2Y = (posY - rectHeight * factor + rectWidth * factor).toString();
 
-      x.attr({ fill: "#00f" });
+      x.attr({ fill: "#000" });
       rect1.attr({ transform: 'translate(' + rect1X + ',' + rect1Y + ') rotate(45, 0, 0)' });
       rect2.attr({ transform: 'translate(' + rect2X + ',' + rect2Y + ') rotate(-45, 0, 0)' });
     } else if (board[i] == 'o') {
       var radius = Math.min(renderer.width, renderer.height)/6 * (2/3);
-      var red_circle = renderer.svg.circle(posX, posY, radius);
+      var circle = renderer.svg.circle(posX, posY, radius);
       var white_mask_border = renderer.svg.circle(posX, posY, radius);
       var black_mask_core = renderer.svg.circle(posX, posY, radius - 15);
-      red_circle.attr({ fill: "#f00" });
+      circle.attr({ fill: "#000" });
       white_mask_border.attr("fill", "#fff");
       black_mask_core.attr("fill", "#000");
 
-      red_circle.attr("mask", renderer.svg.group(white_mask_border, black_mask_core));
+      circle.attr("mask", renderer.svg.group(white_mask_border, black_mask_core));
     }
   }
 }
 
-function drawMove(renderer, move, value, clickCallBack, board, nextBoard) {
+function drawMove(renderer, move, value, color, clickCallBack, board, nextBoard) {
   var move = move - 1; // We want it to be 0-indexed
   var posX = (parseInt(move) % 3) * (renderer.width/3) + (renderer.width/6);
   var posY = Math.floor(parseInt(move) / 3) * (renderer.height/3) + (renderer.height/6);
@@ -160,13 +160,15 @@ function drawMove(renderer, move, value, clickCallBack, board, nextBoard) {
     //Purpose of circle is to let hover be activated when cursor is near the X, but not exactly on
     rect1.attr({ transform: 'translate(' + rect1X + ',' + rect1Y + ') rotate(45, 0, 0)' });
     rect2.attr({ transform: 'translate(' + rect2X + ',' + rect2Y + ') rotate(-45, 0, 0)' });
+    rect1.attr("fill", color);
+    rect2.attr("fill", color);
     var group = renderer.svg.group(rect1, rect2, circle);
   } else {
     var radius = Math.min(renderer.width, renderer.height)/6 * (2/3);
     var white_circle = renderer.svg.circle(posX, posY, radius);
     var white_mask_border = renderer.svg.circle(posX, posY, radius);
     var black_mask_core = renderer.svg.circle(posX, posY, radius - 15);
-    white_circle.attr("fill", "#fff");
+    white_circle.attr("fill", color);
     white_mask_border.attr("fill", "#fff");
     black_mask_core.attr("fill", "#000");
 
