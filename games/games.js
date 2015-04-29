@@ -10,7 +10,13 @@ var games = {
     "img": "games/ttt/ttt.png",
     "src": "games/ttt/ttt.js",
     "title": "Tic Tac Toe",
-    "desc": "The classic game of X's and O's"
+    "desc": "The classic game of X's and O's."
+  },
+  "dao": {
+    "img": "games/dao/Yin_yang.svg",
+    "src": "games/dao/dao.js",
+    "title": "Dao",
+    "desc": "A fair sliding game."
   },
   //"stt": {
     //"img": "games/stt/stt.png",
