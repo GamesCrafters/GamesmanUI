@@ -75,7 +75,8 @@ function showGame(gameName) {
   loadGame(gameName, startGame);
 }
 
-var HOST = 'http://localhost:8081/';
+//var HOST = 'http://localhost:8081/';
+var HOST = 'http://nyc.cs.berkeley.edu:8082/';
 var path = location.pathname.split("/");
 
 function globalHashParams(params) {
