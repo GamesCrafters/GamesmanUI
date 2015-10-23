@@ -225,6 +225,7 @@ function drawMoves(board, nextMoves) {
   }
 }
 
-function syncCallback(callback) {
-  
+Var global.generation = 0;
+function generationCall(function) {
+  Var start.generation = 0;
 }
