@@ -224,3 +224,7 @@ function drawMoves(board, nextMoves) {
     globalRenderer.drawMove(move, value, color, clickCallBack, board, nextBoard);
   }
 }
+
+function syncCallback(callback) {
+  
+}
