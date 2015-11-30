@@ -226,13 +226,13 @@ function drawMoves(board, nextMoves) {
 }
 
 Var global.generation = 0;
-function generationCall(inputFunction, backupFunction) {
+function generationCall(inputFunction) {
   Var start.generation = global.generation;
   Var callBack = function() {
     if (start.generation == global.generation) {
       inputFunction;
-    } else {
-      backupFunction;
+      global.generation += 1;
     }
+  }
   return callBack;
 }
