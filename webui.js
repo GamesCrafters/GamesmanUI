@@ -224,3 +224,15 @@ function drawMoves(board, nextMoves) {
     globalRenderer.drawMove(move, value, color, clickCallBack, board, nextBoard);
   }
 }
+
+Var global.generation = 0;
+function generationCall(inputFunction) {
+  Var start.generation = global.generation;
+  Var callBack = function() {
+    if (start.generation == global.generation) {
+      inputFunction;
+      global.generation += 1;
+    }
+  }
+  return callBack;
+}
